@@ -92,6 +92,8 @@
     this.$scrollParent = options.scrollParent || $(window);
     this.$scrollChild = options.scrollChild || this.$scrollParent;
 
+    this.$scrollParent.data('__cached_height', this.$scrollParent.height());
+
     DOMEvent.attach(this);
   }
 
@@ -126,7 +128,6 @@
 
   // ListView manipulation
   // ---------------------
-
 
   // ### append
   //
@@ -164,6 +165,50 @@
     };
   };
 
+  // ### appendArray
+  //
+  // Append a list of jQuery elements
+  //
+  // Takes:
+  //
+  // - `arr`: an array containing the elements
+
+  ListView.prototype.appendArray = function(arr) {
+    var pages = this.pages;
+    var lastPage = pages[pages.length - 1];
+    var listItems;
+
+    if(!lastPage) {
+      lastPage = new Page(this);
+      pages.push(lastPage);
+    }
+
+    // 50 escritas
+    listItems = arr.map(function (obj) {
+      var item;
+
+      item = convertToItem(this, obj, false, true);
+      lastPage.append(item);
+
+      return item;
+    });
+
+    // 1 escrita
+    insertPagesInView(this);
+
+    // 50 leituras
+    listItems.forEach(function (listItem) {
+      updateCoords(listItem, this.height);
+      this.height += listItem.height;
+    }, this);
+
+    // 1 escrita
+    this.$el.height(this.height);
+
+    // 50 escritas
+    // repartition
+    repartition(this);
+  };
 
   // ### prepend
   //
@@ -365,12 +410,12 @@
   // - `possibleItem`: an object that is either a ListItem, a jQuery element,
   // or a string of valid HTML.
 
-  function convertToItem(listView, possibleItem, prepend) {
+  function convertToItem(listView, possibleItem, prepend, doNotCacheCoords) {
     var item;
     if(possibleItem instanceof ListItem) return possibleItem;
     if(typeof possibleItem === 'string') possibleItem = $(possibleItem);
     item = new ListItem(possibleItem);
-    cacheCoordsFor(listView, item, prepend);
+    !doNotCacheCoords && cacheCoordsFor(listView, item, prepend);
     return item;
   }
 
@@ -632,6 +677,7 @@
     function resizeAll() {
       var index, curr;
       for(index = 0; curr = boundViews[index]; index++) {
+        curr.$scrollParent.data('__cached_height', curr.$scrollParent.height());
         repartition(curr);
       }
     }
@@ -779,8 +825,8 @@
   // Returns false if the Page is at max capacity; false otherwise.
 
   Page.prototype.hasVacancy = function() {
-    var viewRef = this.parent.$scrollParent;
-    return this.height < viewRef.height() * config.PAGE_TO_SCREEN_RATIO;
+    var parentHeight = this.parent.$scrollParent.data('__cached_height');
+    return this.height < parentHeight * config.PAGE_TO_SCREEN_RATIO;
   };
 
 
