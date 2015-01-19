@@ -159,10 +159,7 @@
     lastPage.append(item);
     insertPagesInView(this);
 
-    return {
-        height: this.height,
-        item: item
-    };
+    return item;
   };
 
   // ### appendArray
