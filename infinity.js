@@ -180,7 +180,7 @@
       pages.push(lastPage);
     }
 
-    // 50 escritas
+    // arr.length writes
     listItems = arr.map(function (obj) {
       var item;
 
@@ -190,19 +190,19 @@
       return item;
     });
 
-    // 1 escrita
+    // 1 write
     insertPagesInView(this);
 
-    // 50 leituras
+    // arr.length reads
     listItems.forEach(function (listItem) {
       updateCoords(listItem, this.height);
       this.height += listItem.height;
     }, this);
 
-    // 1 escrita
+    // 1 write
     this.$el.height(this.height);
 
-    // 50 escritas
+    // arr.length reads
     // repartition
     repartition(this);
   };
