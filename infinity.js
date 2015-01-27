@@ -193,18 +193,20 @@
     // 1 write
     insertPagesInView(this);
 
-    // arr.length reads
-    listItems.forEach(function (listItem) {
-      updateCoords(listItem, this.height);
-      this.height += listItem.height;
-    }, this);
+    setImmediate(function () {
+      // arr.length reads
+      listItems.forEach(function (listItem) {
+        updateCoords(listItem, this.height);
+        this.height += listItem.height;
+      }, this);
 
-    // 1 write
-    this.$el.height(this.height);
+      // 1 write
+      this.$el.height(this.height);
 
-    // arr.length reads
-    // repartition
-    repartition(this);
+      // arr.length reads
+      // repartition
+      repartition(this);
+    }.bind(this));
   };
 
   // ### prepend
@@ -330,7 +332,6 @@
 
     for(index; index < length; index++) {
       curr = pages[index];
-      if(listView.lazy) curr.lazyload(listView.lazyFn);
       if(inserted && curr.onscreen) inOrder = false;
 
       if(!inOrder) {
@@ -340,6 +341,8 @@
         inserted = true;
         curr.appendTo(listView.$el);
       }
+
+      if(listView.lazy) curr.lazyload(listView.lazyFn);
     }
   }
 
