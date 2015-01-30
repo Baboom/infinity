@@ -193,20 +193,18 @@
     // 1 write
     insertPagesInView(this);
 
-    setImmediate(function () {
-      // arr.length reads
-      listItems.forEach(function (listItem) {
-        updateCoords(listItem, this.height);
-        this.height += listItem.height;
-      }, this);
+    // arr.length reads
+    listItems.forEach(function (listItem) {
+    updateCoords(listItem, this.height);
+    this.height += listItem.height;
+    }, this);
 
-      // 1 write
-      this.$el.height(this.height);
+    // 1 write
+    this.$el.height(this.height);
 
-      // arr.length reads
-      // repartition
-      repartition(this);
-    }.bind(this));
+    // arr.length reads
+    // repartition
+    repartition(this);
   };
 
   // ### prepend
