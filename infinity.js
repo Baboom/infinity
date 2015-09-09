@@ -206,6 +206,8 @@
         // arr.length reads
         // repartition
         repartition(this);
+        
+        return listItems;
     };
 
     // ### prepend
