@@ -206,7 +206,7 @@
         // arr.length reads
         // repartition
         repartition(this);
-        
+
         return listItems;
     };
 
@@ -989,7 +989,8 @@
 
     function removeItemFromPage(item, page) {
         var index, length, foundIndex,
-            items = page.items;
+            items = page.items,
+            height = 0;
 
         for (index = 0, length = items.length; index < length; index += 1) {
             if (items[index] === item) {
@@ -1003,6 +1004,13 @@
         }
 
         items.splice(foundIndex, 1);
+
+        // Update items coords
+        items.forEach(function (item) {
+            updateCoords(item, height);
+            height += item.height;
+        });
+
         page.bottom -= item.height;
         page.height = page.bottom - page.top;
         if (page.hasVacancy()) {
