@@ -990,7 +990,8 @@
     function removeItemFromPage(item, page) {
         var index, length, foundIndex,
             items = page.items,
-            height = 0;
+            height = 0,
+            listView = page.parent;
 
         for (index = 0, length = items.length; index < length; index += 1) {
             if (items[index] === item) {
@@ -1013,8 +1014,9 @@
 
         page.bottom -= item.height;
         page.height = page.bottom - page.top;
+        listView.height -= item.height;
         if (page.hasVacancy()) {
-            tooSmall(page.parent, page);
+            tooSmall(listView, page);
         }
 
         return true;
