@@ -91,6 +91,7 @@
 
         this.$scrollParent = options.scrollParent || $(window);
         this.$scrollChild = options.scrollChild || this.$scrollParent;
+        this.ignoreResize = !!options.ignoreResize;
 
         this.$scrollParent.data('__cached_height', this.$scrollParent.height());
 
@@ -208,7 +209,7 @@
         // All items coords were calculated so detach the page.
         lastPage.$el.detach();
 
-        // Needs to be repartition instead of insertPagesInView
+        // Needs to repartition instead of insertPagesInView
         // because some items could be in the wrong page.
         repartition(this);
 
@@ -720,6 +721,9 @@
         function resizeAll() {
             var index, curr;
             for (index = 0; !!(curr = boundViews[index]); index += 1) {
+                if (curr.ignoreResize) {
+                    continue;
+                }
                 curr.$scrollParent.data('__cached_height', curr.$scrollParent.height());
                 repartition(curr);
             }
