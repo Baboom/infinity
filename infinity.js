@@ -191,8 +191,10 @@
             return item;
         });
 
-        // 1 write
-        insertPagesInView(this);
+        // Needs to append page to calculate the items height.
+        // The page will be detached after all the items coords
+        // is calculated.
+        lastPage.$el.appendTo(this.$el);
 
         // arr.length reads
         listItems.forEach(function (listItem) {
@@ -203,8 +205,11 @@
         // 1 write
         this.$el.height(this.height);
 
-        // arr.length reads
-        // repartition
+        // All items coords were calculated so detach the page.
+        lastPage.$el.detach();
+
+        // Needs to be repartition instead of insertPagesInView
+        // because some items could be in the wrong page.
         repartition(this);
 
         return listItems;
@@ -310,8 +315,7 @@
         // prepends, change this.
         if (prepend) {
             listView.$el.prepend(listItem.$el);
-        }
-        else {
+        } else {
             listView.$el.append(listItem.$el);
         }
 
@@ -345,11 +349,11 @@
 
             if (!inOrder) {
                 curr.stash(listView.$shadow);
-                curr.appendTo(listView.$el);
             } else if (!curr.onscreen) {
                 inserted = true;
-                curr.appendTo(listView.$el);
             }
+
+            curr.appendTo(listView.$el);
 
             if (listView.lazy) {
                 curr.lazyload(listView.lazyFn);
@@ -733,6 +737,7 @@
             //   event.
 
             attach: function (listView) {
+
                 if (!listView.eventIsBound) {
                     listView.$scrollChild.on('scroll', scrollHandler);
                     listView.eventIsBound = true;
@@ -762,7 +767,7 @@
             detach: function (listView) {
                 var index, length;
                 if (listView.eventIsBound) {
-                    listView.$scrollChild.on('scroll', scrollHandler);
+                    listView.$scrollChild.off('scroll', scrollHandler);
                     listView.eventIsBound = false;
                 }
 
