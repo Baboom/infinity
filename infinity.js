@@ -91,7 +91,7 @@
 
         this.$scrollParent = options.scrollParent || $(window);
         this.$scrollChild = options.scrollChild || this.$scrollParent;
-        this.ignoreResize = !!options.ignoreResize;
+        this.handleResize = (options.handleResize == null) || !!options.handleResize;
 
         this.$scrollParent.data('__cached_height', this.$scrollParent.height());
 
@@ -721,11 +721,10 @@
         function resizeAll() {
             var index, curr;
             for (index = 0; !!(curr = boundViews[index]); index += 1) {
-                if (curr.ignoreResize) {
-                    continue;
+                if (curr.handleResize) {
+                    curr.$scrollParent.data('__cached_height', curr.$scrollParent.height());
+                    repartition(curr);
                 }
-                curr.$scrollParent.data('__cached_height', curr.$scrollParent.height());
-                repartition(curr);
             }
         }
 
